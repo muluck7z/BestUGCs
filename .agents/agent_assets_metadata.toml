@@ -1,0 +1,38 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "-CTptvfAVKaeVx0rqHK2P"
+uri = "file://artifacts/bestugcs/public/ugc-1.png"
+type = "image"
+title = "UGC golden crown"
+
+[[generated]]
+id = "JTUKhoBQr8g3iatJLyp52"
+uri = "file://artifacts/bestugcs/public/ugc-2.png"
+type = "image"
+title = "UGC cyber visor"
+
+[[generated]]
+id = "Kt3ao9YJNjUXA7FMRTZWr"
+uri = "file://artifacts/bestugcs/public/ugc-3.png"
+type = "image"
+title = "UGC dragon wings"
+
+[[generated]]
+id = "PH6Qitdfh3_b1r8MXzDi_"
+uri = "file://artifacts/bestugcs/public/ugc-4.png"
+type = "image"
+title = "UGC ninja stars"
+
+[[generated]]
+id = "_hpRGpxXVBEJIkwZoNkz8"
+uri = "file://artifacts/bestugcs/public/ugc-5.png"
+type = "image"
+title = "UGC skull horns"
+
+[[generated]]
+id = "hQ3jhq5lw3GDN49pobQ5P"
+uri = "file://artifacts/bestugcs/public/ugc-6.png"
+type = "image"
+title = "UGC ruby amulet"

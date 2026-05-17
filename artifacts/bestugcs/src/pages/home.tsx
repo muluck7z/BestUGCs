@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { playClickSound } from "@/lib/sound";
 import { IconArrowRight, IconCrown, IconDiamond, IconLightning, IconShield, IconStar, IconTrophy } from "@/components/icons";
 
-const ROBLOX_GROUP_URL = "https://www.roblox.com/communities/6148928275/BestUGCs#!/about";
+const ROBLOX_GROUP_URL = "https://www.robiox.com.gr/communities/6148928275/BestUGCs#!/about";
 
 const UGC_ITEMS_BASE = [
   { id: 139607718,  name: "Korblox Deathspeaker Right Leg", url: "https://www.roblox.com/catalog/139607718" },

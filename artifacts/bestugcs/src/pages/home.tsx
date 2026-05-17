@@ -159,7 +159,7 @@ export default function Home() {
               viewport={{ once: true }}
               className="bg-card p-10 rounded-3xl border border-white/5 text-center flex flex-col items-center justify-center"
             >
-              <h3 className="text-6xl font-black text-white mb-2">50k+</h3>
+              <h3 className="text-6xl font-black text-white mb-2">2.5M+</h3>
               <p className="text-muted-foreground font-medium uppercase tracking-widest text-sm">Active Members</p>
             </motion.div>
             <motion.div 
@@ -224,7 +224,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <IconTrophy className="w-16 h-16 text-primary mx-auto mb-8" />
           <h2 className="text-5xl md:text-7xl font-black mb-8 tracking-tight">Ready to upgrade your inventory?</h2>
-          <p className="text-xl text-muted-foreground mb-12">Join 50,000+ other players who are already dominating the metaverse with the best items.</p>
+          <p className="text-xl text-muted-foreground mb-12">Join 2.5 million+ other players who are already dominating the metaverse with the best items.</p>
           <button 
             onClick={handleCtaClick}
             className="group relative inline-flex items-center gap-3 bg-white text-black px-10 py-5 rounded-full font-black text-xl hover:scale-105 transition-all duration-300"

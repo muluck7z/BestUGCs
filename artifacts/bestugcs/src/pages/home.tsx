@@ -7,7 +7,7 @@ const ROBLOX_GROUP_URL = "https://www.roblox.com/communities/6148928275/BestUGCs
 
 const UGC_ITEMS_BASE = [
   { id: 139607718,  name: "Korblox Deathspeaker Right Leg", url: "https://www.roblox.com/catalog/139607718" },
-  { id: 134082579,  name: "Classic Roblox Item",            url: "https://www.roblox.com/catalog/134082579" },
+  { id: 17165040274, name: "Rainbow Fun Fedora",             url: "https://www.roblox.com/catalog/17165040274" },
   { id: 21070012,   name: "Dominus Empyreus",               url: "https://www.roblox.com/catalog/21070012"  },
   { id: 494291269,  name: "Super Super Happy Face",         url: "https://www.roblox.com/catalog/494291269" },
   { id: 1365767,    name: "Valkyrie Helm",                  url: "https://www.roblox.com/catalog/1365767"   },

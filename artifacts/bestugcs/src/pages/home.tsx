@@ -6,12 +6,12 @@ import { IconArrowRight, IconCrown, IconDiamond, IconLightning, IconShield, Icon
 const ROBLOX_GROUP_URL = "https://www.roblox.com/communities/6148928275/BestUGCs#!/about";
 
 const UGC_ITEMS_BASE = [
-  { id: 2956239660, name: "Belle Of Belfast Long Red Hair", url: "https://www.roblox.com/catalog/2956239660" },
-  { id: 494291269,  name: "Super Super Happy Face",         url: "https://www.roblox.com/catalog/494291269"  },
-  { id: 4904654004, name: "Shadowed Head",                  url: "https://www.roblox.com/catalog/4904654004"  },
-  { id: 7259123616, name: "Black Messy Hairstyle",          url: "https://www.roblox.com/catalog/7259123616"  },
-  { id: 134082579,  name: "Classic Roblox Item",            url: "https://www.roblox.com/catalog/134082579"   },
-  { id: 17165040274,name: "Rainbow Fun Fedora",             url: "https://www.roblox.com/catalog/17165040274" },
+  { id: 192,        name: "Classic Roblox Item",   url: "https://www.roblox.com/catalog/192"        },
+  { id: 201,        name: "Classic Roblox Item",   url: "https://www.roblox.com/catalog/201"         },
+  { id: 21070012,   name: "Dominus Empyreus",       url: "https://www.roblox.com/catalog/21070012"   },
+  { id: 494291269,  name: "Super Super Happy Face", url: "https://www.roblox.com/catalog/494291269"  },
+  { id: 1365767,    name: "Valkyrie Helm",          url: "https://www.roblox.com/catalog/1365767"    },
+  { id: 28059680,   name: "Classic Roblox Item",   url: "https://www.roblox.com/catalog/28059680"   },
 ];
 
 export default function Home() {

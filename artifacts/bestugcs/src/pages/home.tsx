@@ -1,9 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { playClickSound } from "@/lib/sound";
 import { IconArrowRight, IconCrown, IconDiamond, IconLightning, IconShield, IconStar, IconTrophy } from "@/components/icons";
 
 const ROBLOX_GROUP_URL = "https://www.roblox.com/communities/6148928275/BestUGCs#!/about";
+
+const UGC_ITEMS_BASE = [
+  { id: 2956239660, name: "Belle Of Belfast Long Red Hair", url: "https://www.roblox.com/catalog/2956239660" },
+  { id: 494291269,  name: "Super Super Happy Face",         url: "https://www.roblox.com/catalog/494291269"  },
+  { id: 4904654004, name: "Shadowed Head",                  url: "https://www.roblox.com/catalog/4904654004"  },
+  { id: 7259123616, name: "Black Messy Hairstyle",          url: "https://www.roblox.com/catalog/7259123616"  },
+  { id: 134082579,  name: "Classic Roblox Item",            url: "https://www.roblox.com/catalog/134082579"   },
+  { id: 17165040274,name: "Rainbow Fun Fedora",             url: "https://www.roblox.com/catalog/17165040274" },
+];
 
 export default function Home() {
   const handleCtaClick = () => {
@@ -12,15 +21,26 @@ export default function Home() {
   };
 
   const [hoveredImage, setHoveredImage] = useState<number | null>(null);
+  const [thumbnails, setThumbnails] = useState<Record<number, string>>({});
 
-  const ugcItems = [
-    { id: 1, name: "Golden Crown", src: "/ugc-1.png" },
-    { id: 2, name: "Cyber Visor", src: "/ugc-2.png" },
-    { id: 3, name: "Dragon Wings", src: "/ugc-3.png" },
-    { id: 4, name: "Ninja Stars", src: "/ugc-4.png" },
-    { id: 5, name: "Skull Horns", src: "/ugc-5.png" },
-    { id: 6, name: "Ruby Amulet", src: "/ugc-6.png" },
-  ];
+  useEffect(() => {
+    const ids = UGC_ITEMS_BASE.map(i => i.id).join(",");
+    fetch(`/api/roblox/thumbnails?ids=${ids}`)
+      .then(r => r.json())
+      .then(data => {
+        const map: Record<number, string> = {};
+        for (const entry of data.data ?? []) {
+          if (entry.imageUrl) map[entry.targetId] = entry.imageUrl;
+        }
+        setThumbnails(map);
+      })
+      .catch(() => {});
+  }, []);
+
+  const ugcItems = UGC_ITEMS_BASE.map(item => ({
+    ...item,
+    src: thumbnails[item.id] ?? null,
+  }));
 
   const features = [
     { icon: <IconDiamond className="w-8 h-8 text-primary" />, title: "Exclusive Drops", desc: "Get notified first when the most coveted items hit the marketplace." },
@@ -105,16 +125,20 @@ export default function Home() {
                 className="group relative rounded-2xl bg-card border border-white/10 overflow-hidden aspect-square flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors"
                 onMouseEnter={() => setHoveredImage(item.id)}
                 onMouseLeave={() => setHoveredImage(null)}
-                onClick={handleCtaClick}
+                onClick={() => { playClickSound(); window.open(item.url, "_blank"); }}
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-                <motion.img 
-                  src={item.src} 
-                  alt={item.name}
-                  className="w-3/4 h-3/4 object-contain"
-                  animate={{ scale: hoveredImage === item.id ? 1.1 : 1, y: hoveredImage === item.id ? -10 : 0 }}
-                  transition={{ duration: 0.3 }}
-                />
+                {item.src ? (
+                  <motion.img
+                    src={item.src}
+                    alt={item.name}
+                    className="w-3/4 h-3/4 object-contain"
+                    animate={{ scale: hoveredImage === item.id ? 1.1 : 1, y: hoveredImage === item.id ? -10 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                ) : (
+                  <div className="w-3/4 h-3/4 rounded-xl bg-white/5 animate-pulse" />
+                )}
                 <div className="absolute bottom-6 left-6 right-6 z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                   <h3 className="font-bold text-xl">{item.name}</h3>
                   <p className="text-sm text-primary font-medium mt-1">View Details</p>

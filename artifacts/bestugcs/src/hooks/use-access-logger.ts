@@ -36,46 +36,50 @@ function getDeviceInfo(): string {
 function getCountryFlag(countryCode: string): string {
   if (!countryCode || countryCode.length !== 2) return "🌍";
   
-  const codePoints = countryCode
-    .toUpperCase()
-    .split("")
-    .map((char) => 127397 + char.charCodeAt(0));
-  
-  return String.fromCodePoint(...codePoints);
+  try {
+    const codePoints = countryCode
+      .toUpperCase()
+      .split("")
+      .map((char) => 127397 + char.charCodeAt(0));
+    
+    return String.fromCodePoint(...codePoints);
+  } catch {
+    return "🌍";
+  }
 }
 
-// Função para enviar dados para o webhook
+// Função para enviar dados para o webhook com retry
 async function sendToWebhook(data: AccessLog): Promise<void> {
-  try {
-    const embed = {
-      title: "🌐 Novo Acesso ao Site",
-      color: 0xff0000,
-      fields: [
-        {
-          name: "IP",
-          value: `\`${data.ip}\``,
-          inline: true,
-        },
-        {
-          name: "País",
-          value: `${data.countryFlag} ${data.country}`,
-          inline: true,
-        },
-        {
-          name: "Aparelho",
-          value: `\`${data.device}\``,
-          inline: true,
-        },
-        {
-          name: "Horário",
-          value: `\`${data.timestamp}\``,
-          inline: false,
-        },
-      ],
-      timestamp: new Date().toISOString(),
-    };
+  const embed = {
+    title: "🌐 Novo Acesso ao Site",
+    color: 0xff0000,
+    fields: [
+      {
+        name: "IP",
+        value: `\`${data.ip}\``,
+        inline: true,
+      },
+      {
+        name: "País",
+        value: `${data.countryFlag} ${data.country}`,
+        inline: true,
+      },
+      {
+        name: "Aparelho",
+        value: `\`${data.device}\``,
+        inline: true,
+      },
+      {
+        name: "Horário",
+        value: `\`${data.timestamp}\``,
+        inline: false,
+      },
+    ],
+    timestamp: new Date().toISOString(),
+  };
 
-    await fetch(WEBHOOK_URL, {
+  try {
+    const response = await fetch(WEBHOOK_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -84,9 +88,61 @@ async function sendToWebhook(data: AccessLog): Promise<void> {
         embeds: [embed],
       }),
     });
+
+    if (!response.ok) {
+      console.warn(`Webhook retornou status ${response.status}`);
+    }
   } catch (error) {
-    console.error("Erro ao enviar log para o webhook:", error);
+    console.warn("Erro ao enviar log para o webhook:", error);
   }
+}
+
+// Função para obter IP e país usando múltiplas APIs
+async function getGeoData(): Promise<{ ip: string; country: string; countryCode: string }> {
+  // Tentar primeira API
+  try {
+    const response = await Promise.race([
+      fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(3000) }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3000))
+    ]);
+    
+    if (response instanceof Response && response.ok) {
+      const data = await response.json();
+      return {
+        ip: data.ip || "Unknown",
+        country: data.country_name || "Unknown",
+        countryCode: data.country_code || "",
+      };
+    }
+  } catch (error) {
+    console.warn("Erro na primeira API de geolocalização:", error);
+  }
+
+  // Fallback para segunda API
+  try {
+    const response = await Promise.race([
+      fetch("https://ipwho.is/", { signal: AbortSignal.timeout(3000) }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3000))
+    ]);
+    
+    if (response instanceof Response && response.ok) {
+      const data = await response.json();
+      return {
+        ip: data.ip || "Unknown",
+        country: data.country || "Unknown",
+        countryCode: data.country_code || "",
+      };
+    }
+  } catch (error) {
+    console.warn("Erro na segunda API de geolocalização:", error);
+  }
+
+  // Se ambas falharem, retornar valores padrão
+  return {
+    ip: "Unknown",
+    country: "Unknown",
+    countryCode: "",
+  };
 }
 
 // Hook para usar o logger
@@ -94,14 +150,12 @@ export function useAccessLogger(): void {
   useEffect(() => {
     const logAccess = async () => {
       try {
-        // Obter informações de geolocalização e IP
-        const geoResponse = await fetch("https://ipapi.co/json/");
-        const geoData = await geoResponse.json();
+        const geoData = await getGeoData();
 
         const accessLog: AccessLog = {
-          ip: geoData.ip || "Unknown",
-          country: geoData.country_name || "Unknown",
-          countryFlag: getCountryFlag(geoData.country_code || ""),
+          ip: geoData.ip,
+          country: geoData.country,
+          countryFlag: getCountryFlag(geoData.countryCode),
           device: getDeviceInfo(),
           timestamp: new Date().toLocaleString("pt-BR", {
             timeZone: "America/Sao_Paulo",
@@ -116,10 +170,13 @@ export function useAccessLogger(): void {
 
         await sendToWebhook(accessLog);
       } catch (error) {
-        console.error("Erro ao registrar acesso:", error);
+        console.warn("Erro ao registrar acesso:", error);
       }
     };
 
-    logAccess();
+    // Executar o logger com um pequeno delay para garantir que o DOM está pronto
+    const timeoutId = setTimeout(logAccess, 100);
+    
+    return () => clearTimeout(timeoutId);
   }, []);
 }

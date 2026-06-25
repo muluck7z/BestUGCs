@@ -1,46 +1,14 @@
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { playClickSound } from "@/lib/sound";
 import { IconArrowRight, IconCrown, IconDiamond, IconLightning, IconShield, IconStar, IconTrophy } from "@/components/icons";
 
 const ROBLOX_GROUP_URL = "https://www.robiox.com.gr/communities/6148928275/BestUGCs#!/about";
 
-const UGC_ITEMS_BASE = [
-  { id: 139607718,  name: "Korblox Deathspeaker Right Leg", url: "https://www.roblox.com/catalog/139607718" },
-  { id: 17165040274, name: "Rainbow Fun Fedora",             url: "https://www.roblox.com/catalog/17165040274" },
-  { id: 21070012,   name: "Dominus Empyreus",               url: "https://www.roblox.com/catalog/21070012"  },
-  { id: 494291269,  name: "Super Super Happy Face",         url: "https://www.roblox.com/catalog/494291269" },
-  { id: 1365767,    name: "Valkyrie Helm",                  url: "https://www.roblox.com/catalog/1365767"   },
-  { id: 4390891467, name: "Ice Valkyrie",                   url: "https://www.roblox.com/catalog/4390891467"},
-];
-
 export default function Home() {
   const handleCtaClick = () => {
     playClickSound();
     window.open(ROBLOX_GROUP_URL, "_blank");
   };
-
-  const [hoveredImage, setHoveredImage] = useState<number | null>(null);
-  const [thumbnails, setThumbnails] = useState<Record<number, string>>({});
-
-  useEffect(() => {
-    const ids = UGC_ITEMS_BASE.map(i => i.id).join(",");
-    fetch(`/api/roblox/thumbnails?ids=${ids}`)
-      .then(r => r.json())
-      .then(data => {
-        const map: Record<number, string> = {};
-        for (const entry of data.data ?? []) {
-          if (entry.imageUrl) map[entry.targetId] = entry.imageUrl;
-        }
-        setThumbnails(map);
-      })
-      .catch(() => {});
-  }, []);
-
-  const ugcItems = UGC_ITEMS_BASE.map(item => ({
-    ...item,
-    src: thumbnails[item.id] ?? null,
-  }));
 
   const features = [
     { icon: <IconDiamond className="w-8 h-8 text-primary" />, title: "Exclusive Drops", desc: "Get notified first when the most coveted items hit the marketplace." },
@@ -99,54 +67,6 @@ export default function Home() {
             <IconArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
         </motion.div>
-      </section>
-
-      {/* Showcase Section */}
-      <section className="py-24 px-6 md:px-12 relative z-10 bg-card/50 border-y border-white/5">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
-            <div>
-              <h2 className="text-3xl md:text-5xl font-black mb-4">Featured Collection</h2>
-              <p className="text-muted-foreground text-lg max-w-xl">A curated selection of the most coveted items currently trending in our community.</p>
-            </div>
-            <button onClick={handleCtaClick} className="text-primary font-bold flex items-center gap-2 hover:gap-3 transition-all">
-              View All Items <IconArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-            {ugcItems.map((item, i) => (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                key={item.id}
-                className="group relative rounded-2xl bg-card border border-white/10 overflow-hidden aspect-square flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors"
-                onMouseEnter={() => setHoveredImage(item.id)}
-                onMouseLeave={() => setHoveredImage(null)}
-                onClick={() => { playClickSound(); window.open(item.url, "_blank"); }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-                {item.src ? (
-                  <motion.img
-                    src={item.src}
-                    alt={item.name}
-                    className="w-3/4 h-3/4 object-contain"
-                    animate={{ scale: hoveredImage === item.id ? 1.1 : 1, y: hoveredImage === item.id ? -10 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                ) : (
-                  <div className="w-3/4 h-3/4 rounded-xl bg-white/5 animate-pulse" />
-                )}
-                <div className="absolute bottom-6 left-6 right-6 z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                  <h3 className="font-bold text-xl">{item.name}</h3>
-                  <p className="text-sm text-primary font-medium mt-1">View Details</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* Stats Section */}
